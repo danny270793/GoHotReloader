@@ -2,8 +2,9 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"io"
+	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -12,8 +13,6 @@ type Command struct {
 	command string
 	path    string
 
-	cmd    *exec.Cmd
-	stdout io.ReadCloser
 	cancel context.CancelFunc
 }
 
@@ -25,7 +24,7 @@ func (c *Command) Cancel() {
 	c.cancel()
 }
 
-func (c *Command) Run() error {
+func (c *Command) Run() {
 	parts := strings.Fields(c.command)
 	cmdName := parts[0]
 	cmdArgs := parts[1:]
@@ -34,30 +33,31 @@ func (c *Command) Run() error {
 	c.cancel = cancel
 	cmd := exec.CommandContext(ctx, cmdName, cmdArgs...)
 	cmd.Dir = c.path
-	c.cmd = cmd
+
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		log.Printf("StderrPipe not created because: %v\n", err)
+		return
+	}
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return fmt.Errorf("StdoutPipe not created because: %v", err)
+		log.Printf("StdoutPipe not created because: %v\n", err)
+		return
 	}
-	c.stdout = stdout
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("command not started because: %v", err)
+		log.Printf("command not started because: %v\n", err)
+		return
 	}
 
-	buffer := make([]byte, 4096)
-	for {
-		n, err := stdout.Read(buffer)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return fmt.Errorf("stdout not read because: %v", err)
-		}
-
-		fmt.Printf("%s", buffer[:n])
+	if _, err := io.Copy(os.Stdout, stdout); err != nil {
+		log.Printf("stdout not copied because: %v\n", err)
+		return
 	}
 
-	return nil
+	if _, err := io.Copy(os.Stderr, stderr); err != nil {
+		log.Printf("stderr not copied because: %v\n", err)
+		return
+	}
 }

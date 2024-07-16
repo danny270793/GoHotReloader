@@ -1,4 +1,4 @@
-module github.com/danny270793/go-hotreloader
+module github.com/danny270793/gohotreloader
 
 go 1.21
 

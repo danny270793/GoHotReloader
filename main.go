@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/danny270793/go-hotreloader/command"
-	"github.com/danny270793/go-hotreloader/watcher"
+	"github.com/danny270793/gohotreloader/command"
+	"github.com/danny270793/gohotreloader/watcher"
 )
 
 func main() {
