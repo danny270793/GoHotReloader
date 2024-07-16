@@ -1,7 +1,7 @@
 package watcher
 
 import (
-	"fmt"
+	"log"
 	"unsafe"
 
 	"golang.org/x/sys/unix"
@@ -15,16 +15,17 @@ func New(path string) Watcher {
 	return Watcher{path: path}
 }
 
-func (w *Watcher) Read(c chan string) error {
+func (w *Watcher) Read(c chan string) {
 	inotifyFd, err := unix.InotifyInit()
 	if err != nil {
-		return fmt.Errorf("inotify not created because: %v", err)
+		log.Printf("inotify not created because: %v\n", err)
 	}
 	defer unix.Close(inotifyFd)
 
 	watchDescriptor, err := unix.InotifyAddWatch(inotifyFd, w.path, unix.IN_MODIFY|unix.IN_CREATE|unix.IN_DELETE)
 	if err != nil {
-		return fmt.Errorf("path not added to inotify because: %v", err)
+		log.Printf("path not added to inotify because: %v\n", err)
+		return
 	}
 	defer unix.InotifyRmWatch(inotifyFd, uint32(watchDescriptor))
 
@@ -32,7 +33,8 @@ func (w *Watcher) Read(c chan string) error {
 	for {
 		n, err := unix.Read(inotifyFd, buffer)
 		if err != nil {
-			return fmt.Errorf("inotify not read because: %v", err)
+			log.Printf("inotify not read because: %v\n", err)
+			return
 		}
 
 		var offset uint32
@@ -46,6 +48,4 @@ func (w *Watcher) Read(c chan string) error {
 			offset += unix.SizeofInotifyEvent + event.Len
 		}
 	}
-
-	return nil
 }

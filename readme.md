@@ -13,7 +13,7 @@ Go to [Release page](https://github.com/danny270793/gohotreloader/releases) then
 Get the last version available on github
 
 ```bash
-LAST_VERSION=$(curl https://api.github.com/repos/danny270793/gohotreloader/releases/latest | grep tag_name | cut -d '"' -f 4)
+LAST_VERSION=$(curl https://api.github.com/repos/danny270793/GoHotReloader/releases/latest | grep tag_name | cut -d '"' -f 4)
 ```
 
 Download the last version directly to the binaries folder
@@ -21,13 +21,19 @@ Download the last version directly to the binaries folder
 For Linux (linux):
 
 ```bash
-curl -L https://github.com/danny270793/gohotreloader/releases/download/${LAST_VERSION}/hotreloader -o ./hotreloader
+curl -L https://github.com/danny270793/GoHotReloader/releases/download/${LAST_VERSION}/GoHotReloader_${LAST_VERSION}_linux_amd64.tar.gz -o ./hotreloader.tar.gz
+```
+
+Untar the downloaded file
+
+```bash
+tar -xvf ./hotreloader.tar.gz
 ```
 
 Then copy the binary to the binaries folder
 
 ```bash
-sudo cp ./hotreloader /usr/local/bin/hotreloader
+sudo cp ./GoHotReloader /usr/local/bin/hotreloader
 ```
 
 Make it executable the binary
