@@ -1,6 +1,7 @@
 package command
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"log"
@@ -24,7 +25,7 @@ func (c *Command) Cancel() {
 	c.cancel()
 }
 
-func (c *Command) Run() {
+func (c *Command) Run() (string, error) {
 	parts := strings.Fields(c.command)
 	cmdName := parts[0]
 	cmdArgs := parts[1:]
@@ -37,27 +38,38 @@ func (c *Command) Run() {
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		log.Printf("StderrPipe not created because: %v\n", err)
-		return
+		return "", err
 	}
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Printf("StdoutPipe not created because: %v\n", err)
-		return
+		return "", err
 	}
 
 	if err := cmd.Start(); err != nil {
 		log.Printf("command not started because: %v\n", err)
-		return
+		return "", err
 	}
 
-	if _, err := io.Copy(os.Stdout, stdout); err != nil {
+	var buf bytes.Buffer
+
+	mw := io.MultiWriter(os.Stdout, &buf)
+
+	if _, err := io.Copy(mw, stdout); err != nil {
 		log.Printf("stdout not copied because: %v\n", err)
-		return
+		return "", err
 	}
 
-	if _, err := io.Copy(os.Stderr, stderr); err != nil {
+	if _, err := io.Copy(mw, stderr); err != nil {
 		log.Printf("stderr not copied because: %v\n", err)
-		return
+		return "", err
 	}
+
+	if err := cmd.Wait(); err != nil {
+		log.Printf("error waiting for command to end: %v\n", err)
+		return buf.String(), err
+	}
+
+	return buf.String(), nil
 }
