@@ -1,5 +1,7 @@
 # HotReloader
 
+[![goreleaser](https://github.com/danny270793/GoHotReloader/actions/workflows/release.yaml/badge.svg)](https://github.com/danny270793/GoHotReloader/actions/workflows/release.yaml)
+
 Re-execute command when a file changes
 
 ## Installation
