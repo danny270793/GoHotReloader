@@ -23,7 +23,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
       
       - name: Run tests
-        run: go test
+        run: go test ./...
       
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
