@@ -2,6 +2,12 @@
 
 [![goreleaser](https://github.com/danny270793/GoHotReloader/actions/workflows/release.yaml/badge.svg)](https://github.com/danny270793/GoHotReloader/actions/workflows/release.yaml)
 
+![GitHub repo size](https://img.shields.io/github/repo-size/danny270793/GoHotReloader)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/danny270793/GoHotReloader)
+
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/danny270793/GoHotReloader)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/danny270793/GoHotReloader/total)
+
 Re-execute command when a file changes
 
 ## Installation
